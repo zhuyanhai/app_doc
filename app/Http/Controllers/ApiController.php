@@ -133,14 +133,14 @@ abstract class ApiController extends BaseController
         $this->_headers = $request->header();
         $this->_request = $request;
 
-        //支持的跨域域名
+        //授权允许的跨域域名
         $crossDomain = config('site.crossDomain');
-
         if (isset($this->_headers['origin']) && preg_match('%'.$crossDomain.'%i', $this->_headers['origin'][0])) {
+            //代表本次请求跨域
             $this->isCrossDomain = true;
         }
 
-        $token = Cookie::get('hst-oa-token');
+        //$token = Cookie::get('hst-oa-token');
 
         //请求参数校验
         $this->paramsValidate();
@@ -168,6 +168,7 @@ abstract class ApiController extends BaseController
         if (!empty($cookies)) {
             $return['cookies'] = json_decode(json_encode($cookies));
         }
+
         if (!empty($globalData)) {
             $return['data']['globalData'] = $globalData;
         }
@@ -182,11 +183,9 @@ abstract class ApiController extends BaseController
                 "code" => 0,// 0=成功 非0=失败
                 "msg" => '',//失败理由
             ],
-            'data' => $return['data'],
-            'cookies' => $return['cookies'],
+            'data'     => $return['data'],
+            'cookies'  => $return['cookies'],
         ], 200, $responseHeaders);
-
-        return false;
     }
 
     /**
